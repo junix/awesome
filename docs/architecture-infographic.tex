@@ -1,0 +1,434 @@
+% architecture-infographic.tex — GitHub Awesome 导航信息架构总览
+% 使用 /Users/junix/projects/plot/tikz/styles/showcase.sty
+\documentclass[border=12pt,varwidth=17.2cm]{standalone}
+\usepackage[UTF8,fontset=none]{ctex}
+\IfFontExistsTF{Source Han Serif SC}{
+  \setmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setCJKmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  \setCJKsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+}{
+  \PackageWarningNoLine{tikz-infographic}{Source Han Serif SC not found; using Fandol}
+  \setCJKmainfont[BoldFont={FandolSong-Bold}]{FandolSong-Regular}
+  \setCJKsansfont[BoldFont={FandolHei-Bold}]{FandolHei-Regular}
+}
+\IfFontExistsTF{Sarasa Mono SC}{
+  \setmonofont{Sarasa Mono SC}
+  \setCJKmonofont{Sarasa Mono SC}
+}{
+  \PackageWarningNoLine{tikz-infographic}{Sarasa Mono SC not found; using TeX defaults}
+  \setmonofont{Latin Modern Mono}
+  \setCJKmonofont{FandolFang-Regular}
+}
+
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{amsmath,amssymb}
+\usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.geometric,shadows.blur}
+
+% Load the shared visual language
+\makeatletter
+\def\input@path{{/Users/junix/projects/plot/tikz/styles/}}
+\makeatother
+\usepackage{styles/showcase}
+
+% ── Project-specific semantic styles ──
+\tikzset{
+  awesome/category/.style={
+    showcase/node,
+    minimum width=28mm,
+    minimum height=9mm,
+    font=\footnotesize\bfseries,
+    fill=white,
+    draw=Fog,
+    rounded corners=2mm
+  },
+  awesome/group/.style={
+    showcase/node,
+    minimum width=32mm,
+    minimum height=11mm,
+    font=\small\bfseries,
+    fill=Sky!18,
+    draw=Sky!70,
+    rounded corners=3mm,
+    line width=1pt
+  },
+  awesome/hub/.style={
+    showcase/card,
+    minimum width=48mm,
+    minimum height=14mm,
+    font=\normalsize\bfseries,
+    fill=Ocean!10,
+    draw=Ocean!70,
+    line width=1.2pt,
+    rounded corners=4mm
+  },
+  awesome/external/.style={
+    showcase/card,
+    minimum width=38mm,
+    minimum height=12mm,
+    font=\footnotesize\bfseries,
+    fill=Fog!50,
+    draw=Fog,
+    rounded corners=3mm,
+    densely dashed
+  },
+  awesome/actor/.style={
+    showcase/node,
+    minimum width=36mm,
+    minimum height=12mm,
+    font=\small\bfseries,
+    fill=Mint!30,
+    draw=Teal!60,
+    rounded corners=4mm
+  },
+  awesome/step/.style={
+    showcase/node,
+    minimum width=30mm,
+    minimum height=9mm,
+    font=\footnotesize\bfseries,
+    fill=white,
+    draw=Ocean!50,
+    rounded corners=2mm
+  },
+  awesome/gate/.style={
+    showcase/node,
+    minimum width=30mm,
+    minimum height=9mm,
+    font=\footnotesize\bfseries,
+    fill=Coral!12,
+    draw=Coral!60,
+    rounded corners=2mm
+  },
+  awesome/result/.style={
+    showcase/node,
+    minimum width=30mm,
+    minimum height=9mm,
+    font=\footnotesize\bfseries,
+    fill=Ocean!12,
+    draw=Ocean!60,
+    rounded corners=2mm
+  },
+  awesome/lane/.style={
+    draw=Fog,
+    fill=white,
+    rounded corners=3mm,
+    inner sep=4mm
+  },
+  awesome/lane-title/.style={
+    anchor=west,
+    font=\scriptsize\bfseries,
+    text=Slate
+  },
+  awesome/main-flow/.style={
+    showcase/flow,
+    line width=1.1pt
+  },
+  awesome/support/.style={
+    showcase/softflow,
+    line width=.75pt
+  },
+  awesome/feedback/.style={
+    -{Latex[length=2.1mm,width=1.5mm]},
+    draw=Coral!70,
+    densely dashed,
+    line width=.8pt,
+    rounded corners=2mm
+  },
+  awesome/label/.style={
+    fill=white,
+    inner sep=1.5pt,
+    font=\scriptsize,
+    text=Slate
+  },
+  awesome/count/.style={
+    font=\tiny,
+    text=Slate!80
+  }
+}
+
+% ── Panel connector ──
+\newcommand{\SectionConnector}[1]{%
+  \par\vspace{1mm}
+  \begin{center}
+    \begin{tikzpicture}
+      \draw[awesome/main-flow] (0,.38) -- (0,-.38);
+      \node[anchor=west,font=\scriptsize\bfseries,text=Slate] at (.28,0) {#1};
+    \end{tikzpicture}
+  \end{center}
+  \vspace{1mm}
+}
+
+\begin{document}
+\setlength{\parindent}{0pt}
+
+% ═══════════════════════════════════════
+% Title
+% ═══════════════════════════════════════
+{\scriptsize\bfseries\color{Teal}GITHUB AWESOME · ARCHITECTURE INFOGRAPHIC}\par
+\vspace{2mm}
+{\Huge\bfseries\color{Ink}Awesome 导航信息架构}\par
+\vspace{1mm}
+{\small\color{Slate}一份按主题分类的 GitHub Awesome 清单精选索引，从发现到收录的完整结构。}\par
+\vspace{4mm}
+
+% ═══════════════════════════════════════
+% Panel 1: System Context
+% ═══════════════════════════════════════
+{\scriptsize\bfseries\color{Teal}01 · SYSTEM CONTEXT}\par
+{\Large\bfseries\color{Ink}系统边界与角色}\par
+\vspace{6mm}
+
+\begin{tikzpicture}[>=Latex]
+  % ── Actor: Developer ──
+  \node[awesome/actor] (user) at (0, 0) {开发者};
+
+  % ── Hub: Navigation Index ──
+  \node[awesome/hub] (nav) at (0, -2.2) {Awesome 导航索引};
+  \node[awesome/count, below=-1pt of nav] {\small 10 主题 · 80+ 仓库};
+
+  % ── External: GitHub ──
+  \node[awesome/external] (gh) at (4.8, -4.6) {GitHub 平台};
+  \node[awesome/count, below=-1pt of gh] {仓库 · Issues · PR};
+
+  % ── External: Community ──
+  \node[awesome/external] (comm) at (4.8, -6.5) {社区贡献者};
+
+  % ── Categories (abstracted as a grouped block) ──
+  \node[awesome/group] (cats) at (-2.5, -4.6) {主题分类};
+  \node[awesome/count, below=-1pt of cats] {语言 · Web · AI · 基础设施 · 学习};
+
+  % ── Specific repos ──
+  \node[awesome/category] (repos) at (-2.5, -6.5) {Awesome 仓库};
+
+  % ── Flow edges ──
+  \draw[awesome/main-flow] (user.south) -- node[awesome/label,right]{浏览} (nav.north);
+  \draw[awesome/main-flow] (nav.south west) -- node[awesome/label,left]{分类} (cats.north);
+  \draw[awesome/main-flow] (cats.south) -- node[awesome/label,right]{链接到} (repos.north);
+  \draw[awesome/support]  (repos.east) -- node[awesome/label,above]{跳转} (gh.west);
+  \draw[awesome/support]  (comm.south) -- ++(0,-.3) -| node[awesome/label,right,pos=.2]{维护仓库} (gh.south);
+
+  % ── Legend ──
+  \begin{scope}[shift={(-5.5,-8)}]
+    \draw[awesome/main-flow] (0,0) -- ++(1,0) node[right,font=\scriptsize,text=Slate]{主流程};
+    \draw[awesome/support]  (0,-.4) -- ++(1,0) node[right,font=\scriptsize,text=Slate]{辅助链接};
+    \draw[awesome/feedback] (0,-.8) -- ++(1,0) node[right,font=\scriptsize,text=Slate]{社区反馈};
+    \node[awesome/external,minimum width=14mm,minimum height=5mm,font=\tiny] at (3.5,-.6) {外部系统};
+  \end{scope}
+\end{tikzpicture}
+
+\vspace{2mm}
+{\small\color{Slate}
+索引不存储内容，只负责路由：开发者从总入口出发，经过主题分类到达社区维护的 Awesome 仓库，再从仓库跳转到具体工具。社区贡献者通过 GitHub PR 持续维护各个 Awesome 仓库。}
+
+\SectionConnector{系统边界确定后，展开内部分类结构}
+
+% ═══════════════════════════════════════
+% Panel 2: Taxonomy
+% ═══════════════════════════════════════
+{\scriptsize\bfseries\color{Teal}02 · TAXONOMY}\par
+{\Large\bfseries\color{Ink}十大主题分类体系}\par
+\vspace{6mm}
+
+\begin{tikzpicture}[>=Latex]
+  % ── Root ──
+  \node[awesome/hub, minimum width=40mm] (root) at (0,0) {总索引};
+
+  % ── 5 Groups ──
+  \node[awesome/group] (g1) at (-6, -2.4) {开发基础};
+  \node[awesome/group] (g2) at (-3, -2.4) {Web/应用};
+  \node[awesome/group] (g3) at (0, -2.4)  {AI/数据};
+  \node[awesome/group] (g4) at (3, -2.4)  {基础设施};
+  \node[awesome/group] (g5) at (6, -2.4)  {学习/社区};
+
+  % ── Categories under g1 ──
+  \node[awesome/category] (c-rust) at (-7.2, -4.6) {\scriptsize Rust};
+  \node[awesome/category] (c-py)   at (-5.8, -4.6) {\scriptsize Python};
+  \node[awesome/category] (c-go)   at (-4.4, -4.6) {\scriptsize Go};
+  \node[awesome/category] (c-js)   at (-7.2, -5.8) {\scriptsize JavaScript};
+  \node[awesome/category] (c-ts)   at (-5.8, -5.8) {\scriptsize TypeScript};
+  \node[awesome/category] (c-java) at (-4.4, -5.8) {\scriptsize Java};
+
+  % ── Categories under g2 ──
+  \node[awesome/category] (c-react) at (-3.8, -4.6) {\scriptsize React};
+  \node[awesome/category] (c-vue)   at (-2.4, -4.6) {\scriptsize Vue};
+  \node[awesome/category] (c-css)   at (-3.8, -5.8) {\scriptsize CSS};
+  \node[awesome/category] (c-wasm)  at (-2.4, -5.8) {\scriptsize WebAssembly};
+
+  % ── Categories under g3 ──
+  \node[awesome/category] (c-ai)  at (-0.8, -4.6) {\scriptsize AI 全景};
+  \node[awesome/category] (c-ml)  at (0.6, -4.6)  {\scriptsize ML 框架};
+  \node[awesome/category] (c-llm) at (-0.8, -5.8) {\scriptsize LLM};
+  \node[awesome/category] (c-ds)  at (0.6, -5.8)  {\scriptsize 数据科学};
+
+  % ── Categories under g4 ──
+  \node[awesome/category] (c-docker) at (2.2, -4.6) {\scriptsize Docker};
+  \node[awesome/category] (c-k8s)    at (3.6, -4.6) {\scriptsize K8s};
+  \node[awesome/category] (c-sec)    at (2.2, -5.8) {\scriptsize 安全};
+  \node[awesome/category] (c-cli)    at (3.6, -5.8) {\scriptsize CLI 工具};
+
+  % ── Categories under g5 ──
+  \node[awesome/category] (c-courses) at (5.2, -4.6) {\scriptsize 课程};
+  \node[awesome/category] (c-oss)     at (6.6, -4.6) {\scriptsize 开源入门};
+  \node[awesome/category] (c-books)   at (5.9, -5.8) {\scriptsize 免费书籍};
+
+  % ── Count badges ──
+  \node[awesome/count] at (-5.8, -6.7) {17 仓库};
+  \node[awesome/count] at (-3.1, -6.7) {11 仓库};
+  \node[awesome/count] at (-0.1, -6.7) {10 仓库};
+  \node[awesome/count] at (2.9, -6.7)  {16 仓库};
+  \node[awesome/count] at (5.9, -6.7)  {9 仓库};
+
+  % ── Edges: root → groups ──
+  \foreach \g in {g1,g2,g3,g4,g5}{
+    \draw[awesome/support] (root.south) -- (\g.north);
+  }
+
+  % ── Edges: groups → categories ──
+  \draw[awesome/support] (g1.south) -- (c-rust.north);
+  \draw[awesome/support] (g1.south) -- (c-py.north);
+  \draw[awesome/support] (g1.south) -- (c-go.north);
+  \draw[awesome/support] (g1.south) -- (c-js.north);
+  \draw[awesome/support] (g1.south) -- (c-ts.north);
+  \draw[awesome/support] (g1.south) -- (c-java.north);
+
+  \draw[awesome/support] (g2.south) -- (c-react.north);
+  \draw[awesome/support] (g2.south) -- (c-vue.north);
+  \draw[awesome/support] (g2.south) -- (c-css.north);
+  \draw[awesome/support] (g2.south) -- (c-wasm.north);
+
+  \draw[awesome/support] (g3.south) -- (c-ai.north);
+  \draw[awesome/support] (g3.south) -- (c-ml.north);
+  \draw[awesome/support] (g3.south) -- (c-llm.north);
+  \draw[awesome/support] (g3.south) -- (c-ds.north);
+
+  \draw[awesome/support] (g4.south) -- (c-docker.north);
+  \draw[awesome/support] (g4.south) -- (c-k8s.north);
+  \draw[awesome/support] (g4.south) -- (c-sec.north);
+  \draw[awesome/support] (g4.south) -- (c-cli.north);
+
+  \draw[awesome/support] (g5.south) -- (c-courses.north);
+  \draw[awesome/support] (g5.south) -- (c-oss.north);
+  \draw[awesome/support] (g5.south) -- (c-books.north);
+\end{tikzpicture}
+
+\vspace{2mm}
+{\small\color{Slate}
+总索引下分五个大组、十个主题分区。开发基础（17 仓库）覆盖最多语言，基础设施（16 仓库）次之。每个主题下的仓库由社区独立维护，导航索引只负责提供入口和分类归属。}
+
+\SectionConnector{分类结构映射到一次端到端的收录流程}
+
+% ═══════════════════════════════════════
+% Panel 3: Curation Flow
+% ═══════════════════════════════════════
+{\scriptsize\bfseries\color{Teal}03 · CURATION PIPELINE}\par
+{\Large\bfseries\color{Ink}从发现到收录的七步流程}\par
+\vspace{6mm}
+
+\begin{tikzpicture}[>=Latex,
+  node distance=8mm and 10mm
+]
+  % ── Lane: Discovery ──
+  \node[awesome/lane, minimum width=160mm, minimum height=38mm] (lane-disc) at (0,0) {};
+  \node[awesome/lane-title, anchor=north west] at (lane-disc.north west) {发现阶段};
+
+  % ── Lane: Verification ──
+  \node[awesome/lane, minimum width=160mm, minimum height=38mm, below=4mm of lane-disc] (lane-verif) {};
+  \node[awesome/lane-title, anchor=north west] at (lane-verif.north west) {校验阶段};
+
+  % ── Lane: Publishing ──
+  \node[awesome/lane, minimum width=160mm, minimum height=38mm, below=4mm of lane-verif] (lane-pub) {};
+  \node[awesome/lane-title, anchor=north west] at (lane-pub.north west) {归档阶段};
+
+  % ── Step nodes ──
+  \node[awesome/step] (s1) at (-5.2, 0) {{\bfseries 1.} 搜索};
+  \node[awesome/step] (s2) at (-1.7, 0) {{\bfseries 2.} 评估};
+  \node[awesome/gate] (g1) at (1.8, 0)  {{\bfseries 3.} 公开性};
+  \node[awesome/gate] (g2) at (5.3, 0)  {{\bfseries 4.} 活跃度};
+  \node[awesome/gate] (g3) at (-5.2, -3.6) {{\bfseries 5.} 链接有效性};
+  \node[awesome/gate] (g4) at (-1.7, -3.6) {{\bfseries 6.} 贡献规范};
+  \node[awesome/result] (r1) at (1.8, -3.6) {{\bfseries 7.} 归入分类};
+  \node[awesome/result] (r2) at (5.3, -3.6) {写入索引};
+
+  % ── Flow edges ──
+  \draw[awesome/main-flow] (s1.east) -- node[awesome/label,above]{发现候选} (s2.west);
+  \draw[awesome/main-flow] (s2.east) -- node[awesome/label,above]{开始校验} (g1.west);
+  \draw[awesome/main-flow] (g1.east) -- node[awesome/label,above]{仓库可访问} (g2.west);
+  \draw[awesome/main-flow] (g2.south) -- ++(0,-.6) -| node[awesome/label,right,pos=.15]{提交活跃} (g3.north);
+  \draw[awesome/main-flow] (g3.east) -- node[awesome/label,above]{链接有效} (g4.west);
+  \draw[awesome/main-flow] (g4.east) -- node[awesome/label,above]{格式规范} (r1.west);
+  \draw[awesome/main-flow] (r1.east) -- node[awesome/label,above]{发布} (r2.west);
+
+  % ── Rejection path ──
+  \draw[awesome/feedback] (g1.south) -- ++(0,-.8) -| node[awesome/label,below,pos=.2]{不通过} ++(3,0);
+
+  % ── Discovery sources (annotations) ──
+  \node[font=\scriptsize,text=Slate,anchor=south] at (-5.2, .9) {GitHub 搜索};
+  \node[font=\scriptsize,text=Slate,anchor=south] at (-1.7, .9) {总索引反查};
+\end{tikzpicture}
+
+\vspace{2mm}
+{\small\color{Slate}
+四道校验门把质量关：仓库必须公开可访问、最近提交和 PR 活跃、内部链接全部有效、格式符合「名称+链接+说明」的收录建议。任何一道不通过即淘汰。通过后归入最贴近的主题分类，写入索引。}
+
+\SectionConnector{收录标准本身构成质量保障的最后一道门}
+
+% ═══════════════════════════════════════
+% Panel 4: Quality Criteria
+% ═══════════════════════════════════════
+{\scriptsize\bfseries\color{Teal}04 · QUALITY GATES}\par
+{\Large\bfseries\color{Ink}四项收录标准}\par
+\vspace{6mm}
+
+\begin{tikzpicture}[>=Latex]
+  % ── Central: Index ──
+  \node[awesome/hub, minimum width=42mm] (idx) at (0,0) {导航索引};
+
+  % ── Four criteria as cards ──
+  \node[awesome/step, minimum width=36mm, minimum height=14mm,
+        align=center, text width=30mm] (c1) at (-5.5, -2.4)
+    {内容经过\\筛选};
+  \node[awesome/step, minimum width=36mm, minimum height=14mm,
+        align=center, text width=30mm] (c2) at (-1.8, -2.4)
+    {仓库公开\\可访问};
+  \node[awesome/step, minimum width=36mm, minimum height=14mm,
+        align=center, text width=30mm] (c3) at (1.8, -2.4)
+    {链接全部\\有效};
+  \node[awesome/step, minimum width=36mm, minimum height=14mm,
+        align=center, text width=30mm] (c4) at (5.5, -2.4)
+    {持续维护\\有贡献规范};
+
+  % ── Edges ──
+  \draw[awesome/main-flow] (idx.south west) -- (c1.north);
+  \draw[awesome/main-flow] (idx.south) -- (c2.north);
+  \draw[awesome/main-flow] (idx.south) -- (c3.north);
+  \draw[awesome/main-flow] (idx.south east) -- (c4.north);
+
+  % ── Outcome ──
+  \node[awesome/result, minimum width=44mm, minimum height=12mm,
+        below=14mm of idx, xshift=0mm] (out) {收录到对应主题};
+  \draw[awesome/main-flow] (c1.south) |- (out.north west);
+  \draw[awesome/main-flow] (c2.south) -- (out.north);
+  \draw[awesome/main-flow] (c3.south) -- (out.north);
+  \draw[awesome/main-flow] (c4.south) |- (out.north east);
+
+  % ── Rejection path ──
+  \node[awesome/gate, minimum width=30mm, right=16mm of out] (reject) {淘汰};
+  \draw[awesome/feedback] (out.east) -- node[awesome/label,above]{不满足任一} (reject.west);
+
+  % ── Note ──
+  \node[font=\scriptsize,text=Slate,anchor=north west,text width=60mm]
+    at (-7, -5.5) {
+    不追踪 Star 数和更新时间——这些数据变化很快，记录它们反而导致信息过时。索引只记录结构稳定的事实。
+  };
+\end{tikzpicture}
+
+\vspace{2mm}
+{\small\color{Slate}
+四项标准全部满足才收录。不满足任一条的仓库会被淘汰。这种保守策略把「精选而非穷尽」的原则落到可执行的规则上——读者的注意力比列表的完整性更重要。}
+
+\vspace{4mm}
+\ShowcaseFlatMode
+{\scriptsize\bfseries\color{Slate}generated by code2arch · 2026-08-11 · commit 1c0214f}\par
+
+\end{document}

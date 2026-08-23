@@ -1,0 +1,153 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{styles/showcase}[2026/08/23 Shared visual language for drawing demos]
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage[default]{sourcesanspro}
+\RequirePackage{xcolor}
+\RequirePackage{tikz}
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+
+\usetikzlibrary{
+  arrows.meta,
+  angles,
+  backgrounds,
+  calc,
+  decorations.markings,
+  decorations.pathmorphing,
+  fit,
+  graphs,
+  intersections,
+  matrix,
+  patterns.meta,
+  positioning,
+  quotes,
+  shadows.blur,
+  shapes.geometric,
+  shapes.multipart
+}
+
+% Layer stack: page background sits below `background`, so full-page fills
+% drawn with \ShowcasePageBackground can never cover background-layer panels.
+\pgfdeclarelayer{page background}
+\pgfdeclarelayer{edge layer}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{page background,background,edge layer,main,foreground}
+
+% \ShowcasePageBackground{color}{lower left}{upper right}
+\newcommand{\ShowcasePageBackground}[3]{%
+  \begin{pgfonlayer}{page background}
+    \path[fill=#1] (#2) rectangle (#3);
+  \end{pgfonlayer}%
+}
+
+% \ShowcaseFlatMode drops card blur shadows for dense or print layouts.
+\newcommand{\ShowcaseFlatMode}{%
+  \tikzset{showcase/card shadow/.style={}}%
+}
+
+\definecolor{Paper}{HTML}{F6F3ED}
+\definecolor{PaperDeep}{HTML}{ECE7DE}
+\definecolor{Ink}{HTML}{17212B}
+\definecolor{Slate}{HTML}{52606D}
+\definecolor{Fog}{HTML}{DCE4E6}
+\definecolor{Ocean}{HTML}{356A79}
+\definecolor{Teal}{HTML}{2A9D8F}
+\definecolor{Mint}{HTML}{9FD5C9}
+\definecolor{Coral}{HTML}{E76F51}
+\definecolor{Gold}{HTML}{E9C46A}
+\definecolor{Indigo}{HTML}{5A5B9F}
+\definecolor{Sky}{HTML}{77B8C8}
+\definecolor{Moss}{HTML}{728C69}
+\definecolor{Night}{HTML}{111A24}
+
+\color{Ink}
+\tikzset{
+  >={Latex[length=2.4mm,width=1.7mm]},
+  showcase/card/.style={
+    draw=Fog,
+    fill=white,
+    line width=.75pt,
+    rounded corners=3mm,
+    showcase/card shadow
+  },
+  % Classic offset shadow, not pgf-blur: blur shadows' fading machinery
+  % erases content deferred to custom layers (e.g. page background).
+  showcase/card shadow/.style={
+    drop shadow={shadow xshift=.9mm,shadow yshift=-.9mm,fill=Ink,opacity=.16}
+  },
+  showcase/node/.style={
+    draw=Fog,
+    fill=white,
+    line width=.75pt,
+    rounded corners=2mm,
+    minimum height=10mm,
+    align=center,
+    font=\small\bfseries,
+    text=Ink
+  },
+  showcase/pill/.style={
+    rounded corners=4mm,
+    minimum height=6mm,
+    inner xsep=3mm,
+    font=\scriptsize\bfseries
+  },
+  showcase/flow/.style={
+    -{Latex[length=2.5mm]},
+    line width=1.05pt,
+    draw=Ocean,
+    rounded corners=2mm
+  },
+  showcase/softflow/.style={
+    -{Latex[length=2.2mm]},
+    line width=.8pt,
+    draw=Slate!65,
+    rounded corners=2mm
+  },
+  showcase/data/.style={
+    -{Latex[length=2.4mm]},
+    line width=.9pt,
+    draw=Ocean,
+    rounded corners=2mm
+  },
+  showcase/control/.style={
+    -{Latex[length=2.2mm]},
+    line width=.8pt,
+    draw=Slate!70,
+    densely dashed,
+    rounded corners=2mm
+  },
+  showcase/error/.style={
+    -{Latex[length=2.2mm]},
+    line width=.9pt,
+    draw=Coral,
+    rounded corners=2mm
+  },
+  showcase/inferred/.style={
+    -{Latex[length=2.2mm]},
+    line width=.8pt,
+    draw=Indigo,
+    densely dotted,
+    rounded corners=2mm
+  },
+  showcase/dependency/.style={
+    draw=Slate!55,
+    line width=.7pt
+  },
+  showcase/uncertain/.style={
+    draw=Gold!85!Ink,
+    line width=.8pt,
+    dash pattern=on 1pt off 1.6pt
+  },
+  showcase/dot/.style={circle,inner sep=1.35pt,fill=Coral,draw=none},
+  showcase/title/.style={font=\fontsize{19}{22}\selectfont\bfseries,text=Ink},
+  showcase/subtitle/.style={font=\small,text=Slate},
+  showcase/eyebrow/.style={font=\scriptsize\bfseries,text=Teal},
+}
+
+\newcommand{\ShowcaseTitle}[3]{%
+  \node[showcase/eyebrow,anchor=west] at (#1) {#2};
+  % 7.5 mm keeps the 19 pt title clear of a scriptsize eyebrow even with CJK
+  % font metrics; the old 4.8 mm offset produced overlapping PDF text boxes.
+  \node[showcase/title,anchor=west] at ($(#1)+(0,-7.5mm)$) {#3};
+}

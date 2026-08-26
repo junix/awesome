@@ -31,6 +31,13 @@
 \def\input@path{{/Users/junix/projects/plot/tikz/styles/}}
 \makeatother
 \usepackage{styles/showcase}
+\usepackage{xeCJK}
+\IfFontExistsTF{Source Han Serif SC}{
+  \setCJKmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+}{
+  \setCJKmainfont[BoldFont={FandolHei-Bold}]{FandolHei-Regular}
+}
+
 
 % ── Project-specific semantic styles ──
 \tikzset{

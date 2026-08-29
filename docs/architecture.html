@@ -14,7 +14,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GitHub Awesome 导航 · 架构总览</title>
-<script type="application/json" id="doc-meta">{"id":"architecture","title":"GitHub Awesome 导航 架构总览","status":"draft","audience":"architects","last_updated":"2026-08-26","owners":[],"revisions":[{"date":"2026-08-11","reason":"首次生成"},{"date":"2026-08-26","reason":"统一阅读版式、思源宋体、左目录与插图缩放"}]}</script>
+<script type="application/json" id="doc-meta">{"id":"architecture","title":"GitHub Awesome 导航 架构总览","status":"draft","audience":"architects","last_updated":"2026-08-26","owners":[],"revisions":[{"date":"2026-08-11","reason":"首次生成"},{"date":"2026-08-26","reason":"code2arch 精修：补模块结构、核心数据流、旁注叙事、思源宋体阅读层与插图缩放"}]}</script>
 <style>
   :root {
     --bg: #fafbfc;
@@ -76,6 +76,11 @@
   .char-card { padding: 16px; border: 1px solid var(--border); border-radius: 8px; }
   .char-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
   .char-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 0; max-width: none; }
+  /* Module structure grid */
+  .module-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-width: 34em; margin-bottom: 16px; }
+  .module-card { padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+  .module-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--blue-dark); }
+  .module-card p { font-size: 13px; color: var(--text-secondary); margin-bottom: 0; line-height: 1.6; }
   /* Interaction */
   [data-explains] { cursor: pointer; }
   [data-explains]:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
@@ -108,6 +113,11 @@
   svg.focus-mode .node { opacity: .45 !important; }
   svg.focus-mode .node.hl { opacity: 1 !important; }
   svg .node { transition: opacity .15s ease; }
+  /* Data flow animation */
+  .flow-path { fill: none; stroke-width: 2; stroke: var(--border); }
+  .flow-path.active { stroke: var(--blue); }
+  /* Walkthrough callout */
+  .walkthrough-name { display: inline-block; padding: 4px 12px; border-radius: 20px; background: var(--teal-light); color: var(--teal); font-size: 13px; font-weight: 600; margin-bottom: 16px; }
   /* Footer */
   footer { margin-top: 96px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text-secondary); font-size: 14px; }
   footer p { max-width: none; }
@@ -128,6 +138,7 @@
   }
   @media (max-width: 640px) {
     .characteristics { grid-template-columns: 1fr; }
+    .module-grid { grid-template-columns: 1fr; }
     figure { overflow-x: auto; }
   }
 </style>
@@ -385,17 +396,17 @@
   <h1>GitHub Awesome 导航 · 架构总览</h1>
   <p class="tagline">一份按主题分类的 GitHub Awesome 清单精选索引，帮助开发者快速定位某个领域中值得信赖的库、工具和学习资源。</p>
   <div class="badges">
-    <span class="badge">生成日期：2026-08-11</span>
-    <span class="badge">commit：1c0214f</span>
+    <span class="badge">生成日期：2026-08-26</span>
+    <span class="badge">commit：92caac3</span>
     <span class="badge status">status: draft</span>
   </div>
 </header>
 
 <!-- ============ 产品介绍 ============ -->
 <section id="product">
-  <h2>这是什么</h2>
-  <p><strong>GitHub Awesome 导航是一份「索引的索引」</strong>：它不自行生产内容，而是从社区维护的上千个 Awesome 仓库中筛选出最活跃、分类最清晰的一批，按 10 个技术主题编排，形成开发者一次搜索就能到达的入口页。</p>
-  <p>「Awesome」是 GitHub 上一种约定俗成的仓库命名——以 <code>awesome-xxx</code> 为名的仓库，由社区持续维护，汇总某个领域中值得关注的库、工具、教程和论文。数量庞大且质量参差，本项目的目标是<strong>把筛选标准和分类结构做得透明可查</strong>。</p>
+  <h2>产品介绍</h2>
+  <p><strong>GitHub Awesome 导航是一份「索引的索引」</strong>：它不自行生产内容，而是从社区维护的上千个 Awesome 仓库中筛选出最活跃、分类最清晰的一批，按九大技术主题编排，形成开发者一次搜索就能到达的入口页。</p>
+  <p>「Awesome」是 GitHub 上一种约定俗成的仓库命名——以 <code>awesome-xxx</code> 为名的仓库，由社区持续维护，汇总某个领域中值得关注的库、工具、教程和论文。这类仓库数量庞大且质量参差，本项目的目标是<strong>把筛选标准和分类结构做得透明可查</strong>。</p>
   <p>面向正在选型、调研或入门某个技术方向的工程师：他们需要的是「这个领域有哪些靠谱选项」的答案，而不是一个未整理的长链接列表。本导航与散落的 Awesome 仓库的区别在于：它跨领域统一了分类结构，并明确记录了收录标准——链接有效、仓库公开、有持续维护迹象和贡献规范。</p>
 </section>
 
@@ -403,12 +414,12 @@
 <section id="features">
   <h2>功能与特性</h2>
   <ul class="features">
-    <li><strong>十大技术主题分类</strong><br><span class="desc">编程语言、Web/前端、AI/ML、云原生/DevOps、安全、数据库、移动端/桌面、学习求职——每个主题下收录 5-15 个活跃仓库。</span></li>
+    <li><strong>九大技术主题分类</strong><br><span class="desc">编程语言、Web/前端、AI/ML、云原生/DevOps、安全、数据库、移动端/桌面、学习求职——每个主题下收录 5-17 个活跃仓库。</span></li>
     <li><strong>总入口聚合</strong><br><span class="desc">指向 sindresorhus/awesome 等主索引和 GitHub 官方 Topic 页，让读者先找到总目录，再按主题细分。</span></li>
     <li><strong>一句话说明 + 直链</strong><br><span class="desc">每个条目用「仓库名 + GitHub 链接 + 一句话描述」的固定格式，读者 3 秒判断是否值得深挖。</span></li>
     <li><strong>收录标准透明</strong><br><span class="desc">明确记录四项筛选条件：内容经过筛选、仓库公开、链接有效、有持续维护和贡献规范。</span></li>
     <li><strong>跨领域发现路径</strong><br><span class="desc">「如何继续发现」一节给出 4 步方法论，让读者在本索引覆盖不到的领域也能自助筛选。</span></li>
-    <li><strong>不追踪变动数据</strong><br><span class="desc">Star 数和更新时间变化很快，文档不记录这些数据，避免信息过时误导选型判断。</span></li>
+    <li><strong>不追踪时效数据</strong><br><span class="desc">Star 数和更新时间变化很快，文档不记录这些数据，避免信息过时误导选型判断。</span></li>
     <li><strong>Markdown 原生格式</strong><br><span class="desc">纯 Markdown 表格渲染，GitHub 页面直开，无需构建步骤或额外工具链。</span></li>
     <li><strong>社区共建入口</strong><br><span class="desc">「收录建议」一节定义了新增条目的格式和质量门槛，降低贡献者的学习成本。</span></li>
   </ul>
@@ -416,9 +427,9 @@
 
 <!-- ============ 架构总览图 ============ -->
 <section id="overview">
-  <h2>信息架构总览</h2>
+  <h2>架构总览</h2>
   <figure class="anim" id="fig-overview">
-    <svg role="group" aria-label="信息架构总览" viewBox="0 0 820 520" min-width="820">
+    <svg role="group" aria-label="信息架构总览" viewBox="0 0 820 540" min-width="820">
       <defs>
         <marker id="arr-dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#656b73"/></marker>
         <marker id="arr-lit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
@@ -433,108 +444,120 @@
       <g class="node" style="--i:1" data-nav data-explains="product" data-node="nav">
         <rect x="290" y="130" width="240" height="55" rx="8" fill="#e8f0fe" stroke="#2563eb" stroke-width="2"/>
         <text x="410" y="155" text-anchor="middle" font-size="15" font-weight="700" fill="#1d4ed8">Awesome 导航索引</text>
-        <text x="410" y="173" text-anchor="middle" font-size="12" fill="#656b73">Markdown · 10 主题 · 80+ 仓库</text>
+        <text x="410" y="173" text-anchor="middle" font-size="12" fill="#656b73">README.md · 9 主题 · 80+ 仓库</text>
         <rect class="hit" x="280" y="120" width="260" height="75" fill="transparent" pointer-events="all"/>
       </g>
-      <!-- Category layer -->
+      <!-- Category layer: 9 topics in 2 rows -->
       <g class="node" style="--i:2" data-node="cat-lang">
-        <rect x="40" y="260" width="120" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
-        <text x="100" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">编程语言</text>
-        <rect class="hit" x="30" y="248" width="140" height="64" fill="transparent" pointer-events="all"/>
+        <rect x="20" y="260" width="110" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+        <text x="75" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">编程语言</text>
+        <rect class="hit" x="10" y="248" width="130" height="64" fill="transparent" pointer-events="all"/>
       </g>
       <g class="node" style="--i:2" data-node="cat-web">
-        <rect x="175" y="260" width="120" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
-        <text x="235" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">Web/前端</text>
-        <rect class="hit" x="165" y="248" width="140" height="64" fill="transparent" pointer-events="all"/>
+        <rect x="145" y="260" width="110" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+        <text x="200" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">Web/前端</text>
+        <rect class="hit" x="135" y="248" width="130" height="64" fill="transparent" pointer-events="all"/>
       </g>
       <g class="node" style="--i:2" data-node="cat-ai">
-        <rect x="310" y="260" width="120" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
-        <text x="370" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">AI/ML</text>
-        <rect class="hit" x="300" y="248" width="140" height="64" fill="transparent" pointer-events="all"/>
+        <rect x="270" y="260" width="110" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+        <text x="325" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">AI/ML</text>
+        <rect class="hit" x="260" y="248" width="130" height="64" fill="transparent" pointer-events="all"/>
       </g>
       <g class="node" style="--i:2" data-node="cat-cloud">
-        <rect x="445" y="260" width="120" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
-        <text x="505" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">云原生/DevOps</text>
-        <rect class="hit" x="435" y="248" width="140" height="64" fill="transparent" pointer-events="all"/>
+        <rect x="395" y="260" width="110" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+        <text x="450" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">云原生/DevOps</text>
+        <rect class="hit" x="385" y="248" width="130" height="64" fill="transparent" pointer-events="all"/>
       </g>
       <g class="node" style="--i:2" data-node="cat-sec">
-        <rect x="580" y="260" width="100" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
-        <text x="630" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">安全</text>
-        <rect class="hit" x="570" y="248" width="120" height="64" fill="transparent" pointer-events="all"/>
+        <rect x="520" y="260" width="90" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+        <text x="565" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">安全</text>
+        <rect class="hit" x="510" y="248" width="110" height="64" fill="transparent" pointer-events="all"/>
       </g>
       <g class="node" style="--i:2" data-node="cat-db">
-        <rect x="695" y="260" width="100" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
-        <text x="745" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">数据库</text>
-        <rect class="hit" x="685" y="248" width="120" height="64" fill="transparent" pointer-events="all"/>
+        <rect x="625" y="260" width="90" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+        <text x="670" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">数据库</text>
+        <rect class="hit" x="615" y="248" width="110" height="64" fill="transparent" pointer-events="all"/>
       </g>
-      <g class="node" style="--i:3" data-node="cat-mobile">
-        <rect x="100" y="325" width="120" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
-        <text x="160" y="350" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">移动端/桌面</text>
-        <rect class="hit" x="90" y="313" width="140" height="64" fill="transparent" pointer-events="all"/>
+      <g class="node" style="--i:2" data-node="cat-mobile">
+        <rect x="730" y="260" width="90" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+        <text x="775" y="285" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">移动/桌面</text>
+        <rect class="hit" x="720" y="248" width="110" height="64" fill="transparent" pointer-events="all"/>
       </g>
+      <!-- Row 2 -->
       <g class="node" style="--i:3" data-node="cat-learn">
-        <rect x="235" y="325" width="120" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
-        <text x="295" y="350" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">学习/求职</text>
-        <rect class="hit" x="225" y="313" width="140" height="64" fill="transparent" pointer-events="all"/>
+        <rect x="200" y="330" width="110" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+        <text x="255" y="355" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">学习/求职</text>
+        <rect class="hit" x="190" y="318" width="130" height="64" fill="transparent" pointer-events="all"/>
+      </g>
+      <g class="node" style="--i:3" data-node="cat-entry">
+        <rect x="340" y="330" width="110" height="40" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+        <text x="395" y="355" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">总入口</text>
+        <rect class="hit" x="330" y="318" width="130" height="64" fill="transparent" pointer-events="all"/>
       </g>
       <!-- External: GitHub -->
-      <g class="node" style="--i:3" data-node="github">
-        <rect x="560" y="400" width="220" height="50" rx="8" fill="#eef0f2" stroke="#b8bec6" stroke-dasharray="4 4"/>
-        <text x="670" y="420" text-anchor="middle" font-size="14" font-weight="600" fill="#171a1f">GitHub 平台</text>
-        <text x="670" y="438" text-anchor="middle" font-size="11" fill="#656b73">仓库 · Issues · PR · Topics</text>
+      <g class="node" style="--i:4" data-node="github">
+        <rect x="520" y="420" width="220" height="50" rx="8" fill="#eef0f2" stroke="#b8bec6" stroke-dasharray="4 4"/>
+        <text x="630" y="440" text-anchor="middle" font-size="14" font-weight="600" fill="#171a1f">GitHub 平台</text>
+        <text x="630" y="458" text-anchor="middle" font-size="11" fill="#656b73">仓库 · Issues · PR · Topics</text>
       </g>
       <!-- External: Community -->
-      <g class="node" style="--i:3" data-node="community">
-        <rect x="560" y="465" width="220" height="40" rx="8" fill="#eef0f2" stroke="#b8bec6" stroke-dasharray="4 4"/>
-        <text x="670" y="490" text-anchor="middle" font-size="14" font-weight="600" fill="#171a1f">社区贡献者</text>
+      <g class="node" style="--i:4" data-node="community">
+        <rect x="520" y="485" width="220" height="40" rx="8" fill="#eef0f2" stroke="#b8bec6" stroke-dasharray="4 4"/>
+        <text x="630" y="510" text-anchor="middle" font-size="14" font-weight="600" fill="#171a1f">社区贡献者</text>
       </g>
       <!-- Edges: user → nav -->
       <path class="edge" d="M410 60 V125" data-from="user" data-to="nav" stroke="#2563eb" stroke-width="1.5" fill="none" marker-end="url(#arr-lit)"/>
       <text x="422" y="98" font-size="12" fill="#656b73">浏览</text>
-      <!-- Edges: nav → categories -->
-      <path class="edge" d="M340 185 L100 255" data-from="nav" data-to="cat-lang" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
-      <path class="edge" d="M360 185 L235 255" data-from="nav" data-to="cat-web" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
-      <path class="edge" d="M390 185 L370 255" data-from="nav" data-to="cat-ai" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
-      <path class="edge" d="M440 185 L505 255" data-from="nav" data-to="cat-cloud" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
-      <path class="edge" d="M470 185 L630 255" data-from="nav" data-to="cat-sec" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
-      <path class="edge" d="M490 185 L745 255" data-from="nav" data-to="cat-db" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
-      <path class="edge" d="M340 185 L160 320" data-from="nav" data-to="cat-mobile" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
-      <path class="edge" d="M360 185 L295 320" data-from="nav" data-to="cat-learn" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <!-- Edges: nav → categories (row 1) -->
+      <path class="edge" d="M340 185 L75 255" data-from="nav" data-to="cat-lang" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <path class="edge" d="M355 185 L200 255" data-from="nav" data-to="cat-web" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <path class="edge" d="M375 185 L325 255" data-from="nav" data-to="cat-ai" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <path class="edge" d="M410 185 L450 255" data-from="nav" data-to="cat-cloud" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <path class="edge" d="M440 185 L565 255" data-from="nav" data-to="cat-sec" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <path class="edge" d="M460 185 L670 255" data-from="nav" data-to="cat-db" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <path class="edge" d="M475 185 L775 255" data-from="nav" data-to="cat-mobile" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <!-- Edges: nav → categories (row 2) -->
+      <path class="edge" d="M340 185 L255 325" data-from="nav" data-to="cat-learn" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <path class="edge" d="M410 185 L395 325" data-from="nav" data-to="cat-entry" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
       <!-- Edge: categories → GitHub -->
-      <path class="edge" d="M600 300 L660 395" data-from="cat-sec" data-to="github" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
-      <text x="650" y="350" font-size="11" fill="#656b73">链接到仓库</text>
+      <path class="edge" d="M600 300 L630 415" data-from="cat-sec" data-to="github" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <text x="640" y="360" font-size="11" fill="#656b73">链接到仓库</text>
       <!-- Edge: community → GitHub -->
-      <path class="edge" d="M670 465 V455" data-from="community" data-to="github" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
-      <text x="685" y="462" font-size="11" fill="#656b73">维护</text>
+      <path class="edge" d="M630 485 V475" data-from="community" data-to="github" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <text x="645" y="482" font-size="11" fill="#656b73">维护</text>
       <!-- Legend -->
-      <g transform="translate(40,430)">
-        <rect x="0" y="0" width="280" height="72" rx="6" fill="#ffffff" stroke="#d7dce3"/>
+      <g transform="translate(20,420)">
+        <rect x="0" y="0" width="280" height="90" rx="6" fill="#ffffff" stroke="#d7dce3"/>
         <text x="12" y="20" font-size="12" font-weight="600" fill="#171a1f">图例</text>
         <rect x="12" y="30" width="20" height="12" fill="#e8f0fe" stroke="#2563eb" stroke-width="1.5" rx="3"/>
         <text x="40" y="41" font-size="12" fill="#171a1f">本项目</text>
         <rect x="100" y="30" width="20" height="12" fill="#eef0f2" stroke="#b8bec6" stroke-dasharray="4 4" rx="3"/>
         <text x="128" y="41" font-size="12" fill="#171a1f">外部系统</text>
         <line x1="12" y1="56" x2="32" y2="56" stroke="#656b73" stroke-width="1" marker-end="url(#arr-dim)"/>
-        <text x="40" y="60" font-size="12" fill="#171a1f">分类归属</text>
+        <text x="40" y="60" font-size="12" fill="#171a1f">分类归属 / 链接</text>
+        <rect x="12" y="68" width="20" height="12" fill="#ffffff" stroke="#d7dce3" rx="3"/>
+        <text x="40" y="79" font-size="12" fill="#171a1f">主题分类</text>
       </g>
     </svg>
-    <figcaption>开发者的查询从总入口开始，经过主题分类到达具体的 Awesome 仓库——索引本身不存储内容，只负责路由。</figcaption>
+    <figcaption>开发者从总入口出发，按九大主题逐级下钻，最终到达 GitHub 上由社区维护的具体 Awesome 仓库。</figcaption>
   </figure>
   <div class="explanation" id="explain-overview">
     <p>系统由三层组成：用户层、索引层和外部资源层。</p>
-    <p><strong>开发者</strong>是唯一的角色，带着「找某个领域的靠谱工具」的需求来到索引。<strong>Awesome 导航索引</strong>是整个系统的中枢——它是一份 Markdown 文档，按 10 个技术主题分类编排，每个主题下列出 5-15 个经过筛选的仓库链接。索引不自行托管内容，所有实际资源都指向 <strong>GitHub 平台</strong>上的独立仓库。</p>
+    <p><strong>开发者</strong>是唯一的角色，带着「找某个领域的靠谱工具」的需求来到索引。<strong>Awesome 导航索引</strong>是整个系统的中枢——它是一份 Markdown 文档（README.md），按九大技术主题分类编排，每个主题下列出 5-17 个经过筛选的仓库链接。索引不自行托管内容，所有实际资源都指向 <strong>GitHub 平台</strong>上的独立仓库。</p>
+    <p>九大主题分两层排布：上层是七个核心技术域（编程语言、Web/前端、AI/ML、云原生/DevOps、安全、数据库、移动/桌面），下层是两个辅助入口（学习/求职、总入口）。总入口指向 sindresorhus/awesome 等更大范围的索引，让读者在本页覆盖不到的领域也能找到方向。</p>
     <p><strong>社区贡献者</strong>通过 Pull Request 维护 GitHub 上的各个 Awesome 仓库——添加新条目、修复失效链接、更新描述。导航索引的更新频率低于单个 Awesome 仓库，它只在发现更好的同主题替代或原仓库停止维护时才变动。</p>
     <p>一个易混淆的边界：导航索引与它链接的 Awesome 仓库是两层不同的东西。Awesome 仓库由各领域专家维护、持续更新；导航索引是这些仓库的上层筛选，更新频率更低，筛选标准是「是否活跃」而非「某个具体工具好不好」。</p>
   </div>
 </section>
 
-<!-- ============ 主走查：从主题到资源 ============ -->
+<!-- ============ 主走查 ============ -->
 <section id="walkthrough">
-  <h2>主走查：从主题到资源</h2>
-  <p>选一个真实场景：一位工程师想了解 Rust 生态中有哪些 Web 框架可选。</p>
+  <h2>主走查：主题到资源</h2>
+  <div class="walkthrough-name">主走查 · 「主题到资源」</div>
+  <p>选一个真实场景：一位后端工程师想了解 Rust 生态中有哪些 Web 框架可选，他从打开导航到找到目标工具一共经历六步。</p>
   <div class="walkthrough">
-    <div class="step-item"><strong>打开导航索引</strong>——在仓库根目录找到 README.md，它是唯一的入口文件。</div>
-    <div class="step-item"><strong>定位主题分类</strong>——扫一眼目录，「编程语言与运行时」分区下找到 Awesome Rust 的链接。</div>
+    <div class="step-item"><strong>打开导航索引</strong>——在仓库根目录找到 README.md，它是唯一的入口文件，零构建即可阅读。</div>
+    <div class="step-item"><strong>定位主题分类</strong>——扫一眼九大分区，在「编程语言与运行时」分区下找到 Awesome Rust 的链接。</div>
     <div class="step-item"><strong>进入 Awesome 仓库</strong>——点击链接跳转到 rust-unofficial/awesome-rust，这是一个由社区维护的 Rust 资源清单。</div>
     <div class="step-item"><strong>在 Awesome 仓库内查找</strong>——按仓库自身的分类结构（Web 框架、异步运行时、CLI 工具等）逐级深入。</div>
     <div class="step-item"><strong>评估质量信号</strong>——检查仓库最近提交时间和 Issue 活跃度，确认清单仍在维护。</div>
@@ -542,11 +565,59 @@
   </div>
 </section>
 
+<!-- ============ 模块结构 ============ -->
+<section id="modules">
+  <h2>模块结构</h2>
+  <p>整个项目是单文件架构，但内部按主题分区形成了清晰的模块化结构。每个分区承担独立的信息组织职责，分区之间通过目录锚点互相关联。</p>
+  <div class="module-grid">
+    <div class="module-card">
+      <h4>总入口模块</h4>
+      <p>聚合 sindresorhus/awesome、ultimate-awesome 等总索引和 GitHub 官方 Topic 页，作为读者进入更大生态的跳板。</p>
+    </div>
+    <div class="module-card">
+      <h4>编程语言模块</h4>
+      <p>收录 17 种编程语言的 Awesome 仓库（Rust、Python、Go、C/C++、Java、Swift、JS/TS、Ruby、PHP 等），是内容最多的分区。</p>
+    </div>
+    <div class="module-card">
+      <h4>Web/前端模块</h4>
+      <p>覆盖 React、Vue、Angular、Svelte、CSS、Tailwind、Web Components、Wasm、Electron、GraphQL 等前端生态。</p>
+    </div>
+    <div class="module-card">
+      <h4>AI/ML 模块</h4>
+      <p>涵盖 AI 全景、机器学习、数据科学、深度学习、LLM、LLMOps、LangChain、生成式 AI、LLM 安全等 10 个方向。</p>
+    </div>
+    <div class="module-card">
+      <h4>云原生/DevOps 模块</h4>
+      <p>包含自托管、系统管理、Docker、K8s、云原生、可扩展性、微服务、SRE、可观测性、CI/CD、Shell、CLI、TUI 等 14 类。</p>
+    </div>
+    <div class="module-card">
+      <h4>安全模块</h4>
+      <p>覆盖安全总览、黑客技术、应用安全、渗透测试、模糊测试、事件响应、数字取证、CTF 八个安全方向。</p>
+    </div>
+    <div class="module-card">
+      <h4>数据库/后端模块</h4>
+      <p>包括数据库总览、PostgreSQL、MongoDB、MySQL、数据工程、数据库工具、公开 API、API 工具、工作流引擎。</p>
+    </div>
+    <div class="module-card">
+      <h4>移动/桌面模块</h4>
+      <p>覆盖 iOS、Android、Flutter、React Native、macOS、Windows、Linux 软件、嵌入式、MQTT 物联网等平台资源。</p>
+    </div>
+    <div class="module-card">
+      <h4>学习/求职模块</h4>
+      <p>收录课程、论文、开源入门、面试题、免费书籍、自学路径、技能路线图、运维知识集合等成长向资源。</p>
+    </div>
+    <div class="module-card">
+      <h4>发现方法论模块</h4>
+      <p>「如何继续发现」和「收录建议」两节，分别面向读者自助探索和贡献者提交新条目。</p>
+    </div>
+  </div>
+</section>
+
 <!-- ============ 分类体系图 ============ -->
 <section id="taxonomy">
   <h2>分类体系</h2>
   <figure class="anim" id="fig-taxonomy">
-    <svg role="group" aria-label="分类体系" viewBox="0 0 820 420" min-width="820">
+    <svg role="group" aria-label="分类体系" viewBox="0 0 820 440" min-width="820">
       <!-- Root -->
       <g class="node" style="--i:0" data-node="root">
         <rect x="310" y="10" width="200" height="44" rx="8" fill="#e8f0fe" stroke="#2563eb" stroke-width="2"/>
@@ -645,16 +716,16 @@
         <text x="382" y="290" text-anchor="middle" font-size="10" fill="#656b73">10 仓库</text>
       </g>
       <g class="node" style="--i:2">
-        <text x="542" y="290" text-anchor="middle" font-size="10" fill="#656b73">16 仓库</text>
+        <text x="542" y="290" text-anchor="middle" font-size="10" fill="#656b73">14 仓库</text>
       </g>
       <g class="node" style="--i:2">
         <text x="722" y="290" text-anchor="middle" font-size="10" fill="#656b73">9 仓库</text>
       </g>
       <!-- Discovery note -->
       <g class="node" style="--i:3" data-node="discover">
-        <rect x="220" y="340" width="380" height="50" rx="8" fill="#f0f9ff" stroke="#0891b2" stroke-dasharray="6 4"/>
-        <text x="410" y="362" text-anchor="middle" font-size="13" font-weight="600" fill="#0e7490">GitHub Topics + 关键词搜索</text>
-        <text x="410" y="380" text-anchor="middle" font-size="11" fill="#656b73">awesome + 关键词 · awesome-list Topic 筛选</text>
+        <rect x="220" y="350" width="380" height="50" rx="8" fill="#f0f9ff" stroke="#0891b2" stroke-dasharray="6 4"/>
+        <text x="410" y="372" text-anchor="middle" font-size="13" font-weight="600" fill="#0e7490">GitHub Topics + 关键词搜索</text>
+        <text x="410" y="390" text-anchor="middle" font-size="11" fill="#656b73">awesome + 关键词 · awesome-list Topic 筛选</text>
       </g>
       <!-- Edges: root → groups -->
       <path class="edge" d="M370 54 L90 105" data-from="root" data-to="g-dev" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
@@ -679,18 +750,99 @@
       <path class="edge" d="M700 148 L686 195" data-from="g-learn" data-to="c-courses" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
       <path class="edge" d="M720 148 L766 195" data-from="g-learn" data-to="c-oss" stroke="#656b73" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
       <!-- Edge: discovery arrow from bottom -->
-      <path class="edge" d="M410 340 V305" data-from="discover" data-to="root" stroke="#0891b2" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
+      <path class="edge" d="M410 350 V305" data-from="discover" data-to="root" stroke="#0891b2" stroke-width="1" fill="none" marker-end="url(#arr-dim)"/>
     </svg>
-    <figcaption>十个主题分区按「开发基础 → Web → AI → 基础设施 → 学习」的路径编排，每条路径最终指向社区维护的具体仓库。</figcaption>
+    <figcaption>九大主题按「开发基础 → Web → AI → 基础设施 → 学习」五大分组聚合，每个分组再细分到具体的 Awesome 仓库。</figcaption>
   </figure>
   <div class="explanation" id="explain-taxonomy">
-    <p>索引的分类结构分三层：总索引 → 五大分组 → 十个主题。</p>
+    <p>索引的分类结构分三层：总索引 → 五大分组 → 九大主题。</p>
     <p><strong>开发基础</strong>涵盖 17 种编程语言的 Awesome 仓库（Rust、Python、Go、JavaScript 等），每个仓库聚焦一种语言的库和框架。<strong>Web 与应用</strong>收录 React、Vue、Angular、WebAssembly 等前端生态清单。<strong>AI 与数据</strong>包括机器学习全景、深度学习、LLM 和数据科学四个方向。<strong>基础设施</strong>覆盖 Docker、Kubernetes、CI/CD、可观测性等云原生工具。<strong>学习与社区</strong>收录课程、面试题、开源入门等面向成长路径的资源。</p>
+    <p>五大分组不是并列的等量划分——开发基础组内容最多（17 个仓库），因为编程语言本身就是最细粒度的分类维度；学习与社区组数量最少（9 个），但覆盖面最广，从课程到面试到技能路线图都有。</p>
     <p>底部的「GitHub Topics + 关键词搜索」代表读者自助发现的路径——当导航索引没有覆盖某个细分领域时，读者可以在 GitHub 搜索 <code>awesome + 关键词</code>，结合 <code>awesome-list</code> Topic 筛选，自行找到高质量清单。这条路径不是索引的一部分，而是索引推荐的「用完索引之后怎么办」的方法。</p>
   </div>
 </section>
 
-<!-- ============ 筛选流程图（逐步点亮） ============ -->
+<!-- ============ 核心数据流 ============ -->
+<section id="dataflow">
+  <h2>核心数据流</h2>
+  <p>索引本身不生产数据，它的核心数据流是「社区内容 → 筛选收录 → 读者消费」的三级传播链。数据以仓库链接 + 描述文本的形态在三层之间流动。</p>
+  <figure class="anim" id="fig-dataflow">
+    <svg role="group" aria-label="核心数据流" viewBox="0 0 780 320" min-width="780">
+      <defs>
+        <marker id="arr-flow-dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#656b73"/></marker>
+        <marker id="arr-flow-lit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+      </defs>
+      <!-- Layer 1: Community sources -->
+      <g class="node" style="--i:0" data-node="src1">
+        <rect x="20" y="40" width="160" height="48" rx="8" fill="#eef0f2" stroke="#b8bec6" stroke-dasharray="4 4"/>
+        <text x="100" y="62" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">上游 Awesome 仓库</text>
+        <text x="100" y="78" text-anchor="middle" font-size="11" fill="#656b73">社区维护 · 持续更新</text>
+      </g>
+      <g class="node" style="--i:0" data-node="src2">
+        <rect x="20" y="110" width="160" height="48" rx="8" fill="#eef0f2" stroke="#b8bec6" stroke-dasharray="4 4"/>
+        <text x="100" y="132" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">GitHub Topics</text>
+        <text x="100" y="148" text-anchor="middle" font-size="11" fill="#656b73">awesome · awesome-list</text>
+      </g>
+      <g class="node" style="--i:0" data-node="src3">
+        <rect x="20" y="180" width="160" height="48" rx="8" fill="#eef0f2" stroke="#b8bec6" stroke-dasharray="4 4"/>
+        <text x="100" y="202" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">贡献者 PR</text>
+        <text x="100" y="218" text-anchor="middle" font-size="11" fill="#656b73">收录建议 · 格式校验</text>
+      </g>
+
+      <!-- Arrow: sources → curation -->
+      <path class="edge flow-path active" d="M180 64 H280" data-from="src1" data-to="curation" stroke="#656b73" stroke-width="1.5" fill="none" marker-end="url(#arr-flow-dim)"/>
+      <path class="edge flow-path active" d="M180 134 H280" data-from="src2" data-to="curation" stroke="#656b73" stroke-width="1.5" fill="none" marker-end="url(#arr-flow-dim)"/>
+      <path class="edge flow-path active" d="M180 204 H280" data-from="src3" data-to="curation" stroke="#656b73" stroke-width="1.5" fill="none" marker-end="url(#arr-flow-dim)"/>
+
+      <!-- Layer 2: Curation / Index -->
+      <g class="node" style="--i:1" data-node="curation" data-explains="dataflow">
+        <rect x="280" y="100" width="180" height="90" rx="10" fill="#e8f0fe" stroke="#2563eb" stroke-width="2"/>
+        <text x="370" y="128" text-anchor="middle" font-size="14" font-weight="700" fill="#1d4ed8">筛选与收录层</text>
+        <text x="370" y="148" text-anchor="middle" font-size="12" fill="#656b73">公开性 · 活跃度 · 链接有效</text>
+        <text x="370" y="166" text-anchor="middle" font-size="12" fill="#656b73">分类归档 · 格式标准化</text>
+        <rect class="hit" x="270" y="90" width="200" height="110" fill="transparent" pointer-events="all"/>
+      </g>
+
+      <!-- Arrow: curation → index doc -->
+      <path class="edge flow-path active" d="M460 145 H540" stroke="#656b73" stroke-width="1.5" fill="none" marker-end="url(#arr-flow-dim)"/>
+
+      <!-- Layer 3: Index document -->
+      <g class="node" style="--i:2" data-node="index">
+        <rect x="540" y="110" width="180" height="70" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="1.5"/>
+        <text x="630" y="138" text-anchor="middle" font-size="14" font-weight="600" fill="#171a1f">README.md 索引文档</text>
+        <text x="630" y="156" text-anchor="middle" font-size="12" fill="#656b73">9 大主题 · 80+ 仓库</text>
+        <text x="630" y="172" text-anchor="middle" font-size="11" fill="#656b73">Markdown 表格 · 零构建</text>
+      </g>
+
+      <!-- Arrow: index → reader -->
+      <path class="edge flow-path active" d="M630 180 V240 H100 V80" stroke="#656b73" stroke-width="1.5" fill="none" marker-end="url(#arr-flow-dim)" stroke-dasharray="5 3"/>
+      <text x="30" y="266" font-size="11" fill="#656b73">读者浏览路径（反馈回流）</text>
+
+      <!-- Reader -->
+      <g class="node" style="--i:3" data-node="reader">
+        <rect x="20" y="260" width="160" height="45" rx="8" fill="#e8f0fe" stroke="#2563eb" stroke-width="1.5"/>
+        <text x="100" y="287" text-anchor="middle" font-size="13" font-weight="600" fill="#171a1f">开发者读者</text>
+      </g>
+
+      <!-- Data shape label -->
+      <g transform="translate(290, 220)">
+        <rect x="0" y="0" width="160" height="52" rx="6" fill="#f9fafb" stroke="#d7dce3"/>
+        <text x="10" y="18" font-size="11" font-weight="600" fill="#171a1f">数据形态：条目</text>
+        <text x="10" y="34" font-size="11" fill="#656b73">{ 名称, 链接, 一句话描述 }</text>
+        <text x="10" y="48" font-size="11" fill="#656b73">按主题分组存入表格</text>
+      </g>
+    </svg>
+    <figcaption>数据从社区维护的上游仓库流入，经过筛选与收录层的四道校验，最终以标准化条目的形态呈现在 README.md 中供读者消费。</figcaption>
+  </figure>
+  <div class="explanation" id="explain-dataflow">
+    <p>数据流分三个阶段：源、筛选、呈现。</p>
+    <p><strong>源阶段</strong>有三条输入路径。第一条是上游的 Awesome 仓库本身——导航通过反向追踪 sindresorhus/awesome 等总索引的链接来发现候选。第二条是 GitHub Topics 平台，按 <code>awesome</code> 和 <code>awesome-list</code> 标签筛选热门或新兴清单。第三条是读者和贡献者通过 PR 提交的收录建议，这是一个自下而上的补充渠道。</p>
+    <p><strong>筛选阶段</strong>是导航索引的核心价值所在。四道校验依次执行：仓库是否公开可访问、最近提交和 PR 是否活跃、内部链接是否有效、分类结构和贡献规范是否完整。通过校验的候选被归入九大主题之一，统一改写成「名称 + 链接 + 一句话描述」的格式。</p>
+    <p><strong>呈现阶段</strong>输出为 README.md 中的 Markdown 表格。每条数据只有三个字段——名称（含 GitHub 链接）和一句话描述，加上它所处的主题分区作为隐式分类字段。读者沿着「总入口 → 主题 → Awesome 仓库 → 具体工具」的路径逐级下钻，发现缺失时可以提交 PR 反向补充，形成一个弱反馈环。</p>
+  </div>
+</section>
+
+<!-- ============ 筛选与收录流程 ============ -->
 <section id="curation">
   <h2>筛选与收录流程</h2>
   <figure class="seq" id="fig-curation" data-hint="curation-hint">
@@ -748,7 +900,7 @@
         <rect class="label-rect" x="555" y="254" width="160" height="22" rx="4"/>
         <text x="635" y="270" text-anchor="middle" font-size="13">⑥ 名称 + 链接 + 一句话</text>
       </g>
-      <!-- Done marker -->
+      <!-- Step 7 -->
       <g class="step" tabindex="0" aria-label="提交收录建议">
         <path class="edge" d="M545 304 H710" stroke-width="1.5" fill="none"/>
         <rect class="label-rect" x="580" y="290" width="120" height="22" rx="4"/>
@@ -762,7 +914,7 @@
   <div class="explanation" id="explain-curation">
     <p>收录流程分七个步骤，前四步是校验，后三步是归档。</p>
     <p><strong>发现候选</strong>来自两条路径：GitHub 主动搜索 <code>awesome + 关键词</code>，或从 sindresorhus/awesome 总索引反向追踪。校验阶段依次检查：仓库是否公开（排除私有或已归档的仓库）、最近提交和 PR 是否活跃（排除长期未更新的项目）、仓库内链接是否全部有效（排除大量死链的清单）。</p>
-    <p>通过校验后，按仓库最核心的主题归入十个分类之一，用「仓库名 + GitHub 链接 + 一句话描述」的固定格式写入索引。如果同一主题下已有类似清单，选择分类更清晰、贡献规范更完整的那个。</p>
+    <p>通过校验后，按仓库最核心的主题归入九个分类之一，用「仓库名 + GitHub 链接 + 一句话描述」的固定格式写入索引。如果同一主题下已有类似清单，选择分类更清晰、贡献规范更完整的那个。</p>
     <p>容易混淆的一点：校验阶段不评判仓库里具体工具的质量，只评判这个清单本身的维护状态和链接有效性。具体工具好不好用，留给读者在 Awesome 仓库内自行评估。</p>
   </div>
 </section>
@@ -771,11 +923,12 @@
 <section id="tech-stack">
   <h2>技术栈概览</h2>
   <dl class="tech-stack">
-    <dt>格式</dt><dd>纯 Markdown，GitHub 原生渲染，零构建步骤。</dd>
-    <dt>结构</dt><dd>Markdown 表格（GFM 语法），每个主题一个 table，表头固定为「名称 | 内容」。</dd>
-    <dt>版本控制</dt><dd>Git，单 commit 线性历史，每次更新自包含。</dd>
+    <dt>文档格式</dt><dd>纯 Markdown（GFM），GitHub 原生渲染，零构建步骤。</dd>
+    <dt>结构组织</dt><dd>Markdown 表格，每个主题一个 table，表头固定为「名称 | 内容」。</dd>
+    <dt>版本控制</dt><dd>Git，单文件线性历史，每次更新自包含。</dd>
     <dt>协作方式</dt><dd>GitHub PR + Issue，贡献者 fork 后按收录建议格式提交。</dd>
     <dt>外部依赖</dt><dd>零运行时依赖，仅依赖 GitHub 平台对 Markdown 的渲染能力。</dd>
+    <dt>发布形态</dt><dd>GitHub 仓库首页直接展示，无需部署到独立域名或 Pages。</dd>
   </dl>
 </section>
 
@@ -793,11 +946,19 @@
     </div>
     <div class="char-card">
       <h4>单文件架构</h4>
-      <p>整个索引是一个 README.md，无需构建、无需部署、GitHub Pages 即开即用。维护成本极低，但单文件超过 200 行后导航困难。</p>
+      <p>整个索引是一个 README.md，无需构建、无需部署、GitHub 直开。维护成本极低，但单文件过长后导航成本上升。</p>
     </div>
     <div class="char-card">
       <h4>社区驱动更新</h4>
-      <p>索引内容来自社区维护的 Awesome 仓库，索引本身不生产内容。这把持续维护的负担分散到各领域专家，但也意味着索引质量取决于上游仓库的活跃度。</p>
+      <p>索引内容来自社区维护的 Awesome 仓库，索引本身不生产内容。把持续维护的负担分散到各领域专家，但也依赖上游活跃度。</p>
+    </div>
+    <div class="char-card">
+      <h4>弱反馈闭环</h4>
+      <p>读者发现缺失后可以提交 PR 补充，但没有自动化的链接有效性检测或上游活跃度监控，依赖人工定期核对。</p>
+    </div>
+    <div class="char-card">
+      <h4>零技术门槛</h4>
+      <p>纯 Markdown 意味着任何人都能 fork 修改并提交 PR，不需要了解构建系统或前端框架。代价是交互能力受限。</p>
     </div>
   </div>
 </section>
@@ -805,7 +966,7 @@
 </main>
 
 <footer>
-  <p>生成工具：code2arch · 生成日期：2026-08-11 · 代码快照：commit 1c0214f</p>
+  <p>生成工具：code2arch · 生成日期：2026-08-26 · 代码快照：commit 92caac3</p>
   <p>如需在代码演进后重新生成：运行 code2arch 工具指向本仓库根目录，工具会自动检测已有产物并走增量更新模式。</p>
 </footer>
 
@@ -1001,9 +1162,6 @@
   </script>
   <script data-code2arch-svg-text-floor>
     (() => {
-      // Leave sub-pixel headroom above the 12px hard gate. Chromium rounds
-      // glyph boxes differently across fonts, so a nominal 12.2px target can
-      // still render as 11.98px and fail the geometry audit.
       const minimumHeight = 12.8;
       const repair = () => {
         document.querySelectorAll("svg text").forEach((label) => {

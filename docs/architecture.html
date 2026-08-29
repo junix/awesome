@@ -14,7 +14,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GitHub Awesome 导航 · 架构总览</title>
-<script type="application/json" id="doc-meta">{"id":"architecture","title":"GitHub Awesome 导航 架构总览","status":"draft","audience":"architects","last_updated":"2026-08-26","owners":[],"revisions":[{"date":"2026-08-11","reason":"首次生成"},{"date":"2026-08-26","reason":"code2arch 精修：补模块结构、核心数据流、旁注叙事、思源宋体阅读层与插图缩放"}]}</script>
+<script type="application/json" id="doc-meta">{"id":"architecture","title":"GitHub Awesome 导航 架构总览","status":"draft","audience":"architects","last_updated":"2026-08-29","owners":[],"revisions":[{"date":"2026-08-11","reason":"首次生成"},{"date":"2026-08-26","reason":"code2arch 精修：补模块结构、核心数据流、旁注叙事、思源宋体阅读层与插图缩放"},{"date":"2026-08-29","reason":"统一阅读版式、思源宋体、左目录与插图缩放"}]}</script>
 <style>
   :root {
     --bg: #fafbfc;
@@ -143,26 +143,38 @@
   }
 </style>
 <script>document.documentElement.className += " js";</script>
-
+<style id="site-tokens">
+:root{
+  --paper:#fafbfc; --surface:#ffffff; --surface-muted:#f1f4f8;
+  --ink:#171a1f; --muted:#656b73; --soft:#8a929c;
+  --rule:#d7dce3; --rule-strong:#b8c0cc;
+  --accent:#2563eb; --accent-tint:#e8f0fe; --accent-ink:#1d4ed8; --accent-lit:#3b82f6;
+  --external:#eef0f2;
+  --font-reading:"Source Han Serif SC","思源宋体","Noto Serif CJK SC","Songti SC",serif;
+  --font-title:"Noto Serif SC","Source Han Serif SC","Noto Serif CJK SC",Georgia,serif;
+  --font-mono:"SF Mono","JetBrains Mono",ui-monospace,Menlo,monospace;
+  --page-width:1280px; --toc-width:180px; --layout-gap:40px; --narrative-width:760px; --note-width:270px; --note-gap:30px; --radius:8px;
+}
+</style>
 <style data-code2arch-reading-chrome>
     :root {
-      --c2a-page: #faf9f7;
-      --c2a-surface: #ffffff;
-      --c2a-surface-muted: #f3f2ee;
-      --c2a-text: #26292e;
-      --c2a-muted: #6d737b;
-      --c2a-line: rgba(0, 0, 0, .12);
-      --c2a-accent: #356a79;
-      --c2a-page-width: 1280px;
-      --c2a-toc-width: 180px;
+      --c2a-page: var(--paper);
+      --c2a-surface: var(--surface);
+      --c2a-surface-muted: var(--surface-muted);
+      --c2a-text: var(--ink);
+      --c2a-muted: var(--muted);
+      --c2a-line: var(--rule);
+      --c2a-accent: var(--accent);
+      --c2a-page-width: var(--page-width);
+      --c2a-toc-width: var(--toc-width);
       --c2a-main-width: 1060px;
-      --c2a-narrative-width: 760px;
-      --c2a-note-width: 270px;
-      --c2a-layout-gap: 40px;
-      --c2a-note-gap: 30px;
-      --c2a-reading: "Source Han Serif SC", "思源宋体", "Noto Serif CJK SC", "Songti SC", serif;
-      --c2a-title: "Noto Serif SC", Georgia, "Times New Roman", serif;
-      --c2a-mono: "SF Mono", "JetBrains Mono", ui-monospace, monospace;
+      --c2a-narrative-width: var(--narrative-width);
+      --c2a-note-width: var(--note-width);
+      --c2a-layout-gap: var(--layout-gap);
+      --c2a-note-gap: var(--note-gap);
+      --c2a-reading: var(--font-reading);
+      --c2a-title: var(--font-title);
+      --c2a-mono: var(--font-mono);
     }
     body.c2a-refined,
     body.c2a-refined :where(p, li, dt, dd, blockquote, figcaption, table, th, td,
@@ -272,7 +284,6 @@
       background: var(--c2a-surface);
       color: var(--c2a-accent);
       cursor: zoom-in;
-      box-shadow: 0 1px 4px rgba(0,0,0,.08);
     }
     .c2a-figure-zoom::before {
       content: "";
@@ -311,9 +322,8 @@
       border-radius: 12px;
       background: var(--c2a-surface);
       color: var(--c2a-text);
-      box-shadow: 0 20px 70px rgba(23,30,35,.28);
     }
-    .c2a-figure-viewer::backdrop { background: rgba(20,27,31,.72); backdrop-filter: blur(3px); }
+    .c2a-figure-viewer::backdrop { background: rgba(23,26,31,.72); backdrop-filter: blur(3px); }
     .c2a-figure-viewer[open] { display: block; }
     .c2a-zoom-shell { display: grid; grid-template-rows: auto minmax(0,1fr); height: 100%; }
     .c2a-zoom-toolbar {
@@ -342,7 +352,7 @@
     }
     .c2a-zoom-controls button:hover { border-color: var(--c2a-accent); color: var(--c2a-accent); background: var(--c2a-surface-muted); }
     .c2a-zoom-controls .c2a-zoom-close { margin-left: 6px; font-size: 18px; }
-    .c2a-zoom-viewport { min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: contain; background: #eeece7; }
+    .c2a-zoom-viewport { min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: contain; background: var(--c2a-surface-muted); }
     .c2a-zoom-stage { display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 24px; }
     .c2a-zoom-stage > :where(svg, img) {
       display: block;
@@ -351,7 +361,7 @@
       min-width: 0 !important;
       height: auto;
       background: var(--c2a-surface);
-      box-shadow: 0 2px 14px rgba(0,0,0,.10);
+      border: 1px solid var(--c2a-line);
     }
     body.c2a-zoom-open { overflow: hidden; }
     @media (max-width: 1320px) {
@@ -1160,27 +1170,6 @@
       });
     })();
   </script>
-  <script data-code2arch-svg-text-floor>
-    (() => {
-      const minimumHeight = 12.8;
-      const repair = () => {
-        document.querySelectorAll("svg text").forEach((label) => {
-          const box = label.getBoundingClientRect();
-          if (box.height <= 0 || box.height >= minimumHeight) return;
-          const fontSize = parseFloat(getComputedStyle(label).fontSize);
-          if (!Number.isFinite(fontSize) || fontSize <= 0) return;
-          const next = Math.ceil(fontSize * minimumHeight / box.height * 10) / 10;
-          label.style.fontSize = `${next}px`;
-        });
-      };
-      repair();
-      repair();
-      requestAnimationFrame(repair);
-      setTimeout(repair, 250);
-      setTimeout(repair, 750);
-      setTimeout(repair, 1500);
-    })();
-  </script>
 <dialog class="c2a-figure-viewer" data-code2arch-figure-viewer aria-label="插图查看器">
     <div class="c2a-zoom-shell">
       <div class="c2a-zoom-toolbar">
@@ -1326,6 +1315,30 @@
   </script>
   <script data-code2arch-runtime-ready>
     window.__docReady = true;
+  </script>
+  <script data-code2arch-svg-text-floor>
+    (() => {
+      // Leave sub-pixel headroom above the 12px hard gate. Chromium rounds
+      // glyph boxes differently across fonts, so a nominal 12.2px target can
+      // still render as 11.98px and fail the geometry audit.
+      const minimumHeight = 12.8;
+      const repair = () => {
+        document.querySelectorAll("svg text").forEach((label) => {
+          const box = label.getBoundingClientRect();
+          if (box.height <= 0 || box.height >= minimumHeight) return;
+          const fontSize = parseFloat(getComputedStyle(label).fontSize);
+          if (!Number.isFinite(fontSize) || fontSize <= 0) return;
+          const next = Math.ceil(fontSize * minimumHeight / box.height * 10) / 10;
+          label.style.fontSize = `${next}px`;
+        });
+      };
+      repair();
+      repair();
+      requestAnimationFrame(repair);
+      setTimeout(repair, 250);
+      setTimeout(repair, 750);
+      setTimeout(repair, 1500);
+    })();
   </script>
 </body>
 </html>

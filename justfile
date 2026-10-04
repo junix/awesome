@@ -4,10 +4,14 @@ build:
     @echo "Content repository; no compilation step."
 
 test:
-    @echo "Content repository; no automated test suite."
+    python3 -m unittest discover -s tests -v
 
 install:
     @echo "Content repository; no executable to install."
+
+# Offline URL inventory; HTTP checking remains an explicit script --check option.
+audit-links:
+    python3 scripts/audit_links.py
 
 # Remove local build caches and documentation intermediates.
 clean: clean-artifacts
